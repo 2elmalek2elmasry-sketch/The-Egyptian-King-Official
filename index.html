@@ -1331,6 +1331,15 @@ const provider = new firebase.auth.GoogleAuthProvider();
     </div>
   </div>
 
+  <div class="search-wrapper">
+  <div class="search-box">
+    <i class="fas fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search Hoodies, T-Shirts, gift cards..."
+      oninput="handleSearch()" onkeypress="if(event.key==='Enter'){runSearchAction()}">
+    <button class="btn" onclick="runSearchAction()">Search</button>
+  </div>
+</div>
+  
   <!-- Toast Container -->
   <div class="toast-container" id="toastContainer"></div>
 
@@ -2146,6 +2155,107 @@ const provider = new firebase.auth.GoogleAuthProvider();
   };
 })();
 
+</script>
+<script>
+  function handleSearch(){
+  renderProducts(document.getElementById("searchInput").value);
+}
+
+function runSearchAction(){
+  const value = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+  if(!value){
+    renderProducts("");
+    return;
+  }
+
+  if(value.includes("H") || value.includes("Hoodie") || value.includes("Hoodies")){
+    openMarketplaceModal("Hoodies");
+    return;
+  }
+  if(value.includes("T-Shirts") || value.includes("Tees") || value.includes("Tee") || value.includes("T-Shirt")){
+    openMarketplaceModal("T-Shirts");
+    return;
+  }
+  if(value.includes("gift") || value.includes("coupon") || value.includes("card")){
+    openMarketplaceModal("Coupons");
+    return;
+  }
+  renderProducts(value);
+}
+function renderProducts(searchQuery) {
+  const grid = document.getElementById('products-grid');
+  grid.innerHTML = '';
+
+  const query = searchQuery.trim().toLowerCase();
+
+  const filtered = products.filter(p => {
+    return p.name.toLowerCase().includes(query) ||
+           p.category.toLowerCase().includes(query) ||
+           (p.subcategory || '').toLowerCase().includes(query);
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-muted);font-size:18px;">No products matched your search.</div>`;
+    return;
+  }
+
+  filtered.slice(0, 12).forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'product-card reveal active';
+    card.innerHTML = `
+      <div class="product-img" onclick="openQuickView(${p.id})">
+        ${p.tag ? `<div class="badge-new ${p.tag === 'HOT' ? 'hot' : ''}">${p.tag}</div>` : ''}
+        <img src="${p.img}" alt="${p.title}">
+      </div>
+      <div class="product-info">
+        <div class="product-category">${p.category} • ${p.subcategory || ''}</div>
+        <div class="product-title">${p.title}</div>
+        <div class="product-rating"><i class="fas fa-star"></i> ${p.rating.toFixed(1)} <span>(verified)</span></div>
+        <div class="product-action">
+          <div class="product-price" data-usd-price="${p.price}">${formatMoney(p.price)}</div>
+          <button class="btn" style="padding:12px 20px;" onclick="addToCart(${p.id})"><i class="fas fa-cart-plus"></i></button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+  refreshAllPrices();
+}
+
+function escapeHtml(str) {
+  return String(str).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+}
+
+function formatMoney(usd) {
+  const rate = window.currentRate || 1;
+  const currency = window.currentCurrency || 'EGP';
+  const amount = (usd * rate).toFixed(0);
+  return `${currency} ${amount}`;
+}
+function runSearchAction() {
+  const input = (document.getElementById("searchInput").value || "").toLowerCase().trim();
+
+  if (!input) {
+    renderProducts('all'); // Show all products if empty
+    return;
+  }
+
+  if (input.includes("hoodie")) {
+    openMarketplaceModal("Hoodies");
+    return;
+  }
+  if (input.includes("t-shirt")) {
+    openMarketplaceModal("T-Shirts");
+    return;
+  }
+  if (input.includes("gift")) {
+    openMarketplaceModal("Coupons");
+    return;
+  }
+
+  // Otherwise, show matching products
+  renderProducts(input);
+}
 </script>
 </body>
 </html>
