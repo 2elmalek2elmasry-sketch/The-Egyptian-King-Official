@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
@@ -1072,7 +1073,7 @@
 
     <div class="countdown-wrapper">
       <div class="countdown-label">Next Royal Drop In</div>
-      "countdown-timer">00d 00h 00m 00s</div>
+      <div id="countdown-timer">00d 00h 00m 00s</div>
     </div>
 
     <a href="#collection" class="btn" style="font-size:18px;padding:18px 36px;">
@@ -1207,27 +1208,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script>
-  
-  function handleCredentialResponse(response) {
-  // Decode the credential token
-  const responsePayload = decodeJwtResponse(response.credential);
-  console.log("ID: " + responsePayload.sub);
-  console.log("Full Name: " + responsePayload.name);
-  console.log("Email: " + responsePayload.email);
-  
-  // You can now send this info to your backend for login/registration
-  // Example:
-  // loginWithGoogleToken(response.credential);
-}
-function decodeJwtResponse(token) {
-  const base64Url = token.split('.')[1];
-  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-  const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-  }).join(''));
-  return JSON.parse(jsonPayload);
-}
-  
 // 1. Initialize Firebase ONCE
 const firebaseConfig = {
   apiKey: "AIzaSyCysMVjzRSEaudRwhHRd2YE2MmBqA5brYw",
@@ -1309,10 +1289,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
         </div>
       </div>
       <div class="choice-grid">
-        <div id="g_id_onload"
-         data-client_id="409567497315-u3cg55kqmk4v3hf2ied5lclunl6o0suh.apps.googleusercontent.com"
-          data-callback="handleCredentialResponse">
-          </div>
+        <div class="choice-card" onclick="showToast('Google Sign-In coming soon!', 'info')">
           <div class="icon"><i class="fab fa-google" style="color:#ea4335;"></i></div>
           <h3>Google</h3>
           <p>Continue with Google</p>
